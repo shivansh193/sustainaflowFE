@@ -10,7 +10,7 @@ export default function CityCountryState() {
   const solveTSP= async () => {
     try {
       // Make a POST request to your Flask backend
-      const response = await fetch('http://pustak337.pythonanywhere.com/', {
+      const response = await fetch('http://pustak337.pythonanywhere.com/solve-tsp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
