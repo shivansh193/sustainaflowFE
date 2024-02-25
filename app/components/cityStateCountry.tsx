@@ -6,8 +6,8 @@ export default function CityCountryState() {
   const [selectedCountry, setSelectedCountry] = useState<number | null>(null);
   const [locations, setLocations] = useState<{ countryId: number; stateId: number; }[]>([]);
   const [cities, setCities] = useState<string[]>([]);
-
-  const solveTSP= async () => {
+  const [optimalRoute, setOptimalRoute] = useState<string[]>([]);
+  const solveTSP = async () => {
     try {
       // Make a POST request to your Flask backend
       const response = await fetch('http://pustak337.pythonanywhere.com/solve-tsp', {
@@ -26,11 +26,14 @@ export default function CityCountryState() {
 
       // Handle the response from the backend if needed
       const data = await response.json();
-      console.log(data); // Log the response from the backend
+      console.log(data);
+      setOptimalRoute(data.optimal_route) 
+      console.log(data.optimal_route)// Log the response from the backend
     } catch (error) {
       console.error('There was a problem with your fetch operation:', error);
     }
   };
+
   const addLocation = () => {
     setLocations([...locations, { countryId: selectedCountry || 0, stateId: 0 }]);
     setCities([...cities, ""]); // Add an empty city for each new location
@@ -49,9 +52,9 @@ export default function CityCountryState() {
   };
 
   return (
-    <div>
-      <div style={{ marginBottom: "10px" }}>
-        <h6>Country</h6>
+    <div className="p-4">
+      <div className="mb-4">
+        <h6 className="mb-2">Country</h6>
         <CountrySelect
           onChange={(e) => {
             setSelectedCountry(e.id);
@@ -61,20 +64,20 @@ export default function CityCountryState() {
       </div>
       {selectedCountry !== null && (
         <div>
-          <h6>Locations</h6>
+          <h6 className="mb-2">Locations</h6>
           {locations.map((location, index) => (
-            <div key={index} style={{ marginBottom: "10px" }}>
-              <h6>Location {index + 1}</h6>
-              <div style={{ marginRight: "10px" }}>
-                <h6>State</h6>
+            <div key={index} className="mb-4">
+              <h6 className="mb-2">Location {index + 1}</h6>
+              <div className="mr-4">
+                <h6 className="mb-2">State</h6>
                 <StateSelect
                   countryid={selectedCountry}
                   onChange={(e) => handleStateChange(e, index)}
                   placeHolder="Select State"
                 />
               </div>
-              <div style={{ marginRight: "10px" }}>
-                <h6>City</h6>
+              <div className="mr-4">
+                <h6 className="mb-2">City</h6>
                 <CitySelect
                   countryid={selectedCountry}
                   stateid={locations[index].stateId}
@@ -84,11 +87,13 @@ export default function CityCountryState() {
               </div>
             </div>
           ))}
-          <button onClick={addLocation}>Add Location</button>
+          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={addLocation}>
+            Add Location
+          </button>
         </div>
       )}
       <div>
-        <h6>Selected Locations:</h6>
+        <h6 className="mb-2">Selected Locations:</h6>
         <ul>
           {cities.map((city, index) => (
             <li key={index}>
@@ -97,7 +102,17 @@ export default function CityCountryState() {
           ))}
         </ul>
       </div>
-      <button onClick={solveTSP}>Solve TSP</button>
+      <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={solveTSP}>
+        Solve TSP
+      </button>
+      <div>
+        <h6 className="mb-2">Optimal Route:</h6>
+        <ul>
+          {optimalRoute.map((city, index) => (
+            <li key={index}>{cities[city]}</li>
+          ))}
+        </ul>
+        </div>
     </div>
   );
 }
